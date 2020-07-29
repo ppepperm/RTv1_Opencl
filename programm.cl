@@ -21,9 +21,7 @@ typedef double3 real3_t;
 typedef double4 real4_t;
 typedef double8 real8_t;
 typedef double16 real16_t;
-
 __constant real_t inc = 0.11111;
-
 #define PI 3.14159265358979323846
 
 #else
@@ -35,12 +33,18 @@ typedef float3 real3_t;
 typedef float4 real4_t;
 typedef float8 real8_t;
 typedef float16 real16_t;
-
 __constant real_t inc = 0.222222;
-
 #define PI 3.14159265359f
 
 #endif
+
+typedef struct __attribute__ ((packed))	s_data
+{
+	real_t	param1;
+	int		param2;
+	char	param3;
+};
+
 
 __kernel void vector_add(__global const real_t *A, __global const real_t *B, __global double *C) {
 

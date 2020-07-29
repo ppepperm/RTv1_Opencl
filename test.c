@@ -10,7 +10,7 @@
 
 #define MAX_SOURCE_SIZE (0x100000)
 
-typedef struct		s_data
+typedef struct __attribute__ ((packed))	s_data
 {
 	double	param1;
 	int		param2;
