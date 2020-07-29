@@ -43,7 +43,7 @@ typedef struct __attribute__ ((packed))	s_data
 	real_t	param1;
 	int		param2;
 	char	param3;
-};
+}										t_data;
 
 
 __kernel void vector_add(__global const real_t *A, __global const real_t *B, __global double *C) {

@@ -15,7 +15,7 @@ typedef struct __attribute__ ((packed))	s_data
 	double	param1;
 	int		param2;
 	char	param3;
-};
+}										t_data;
 
 int main(void) {
 	// Create the two input vectors
@@ -26,6 +26,13 @@ int main(void) {
 	for(i = 0; i < LIST_SIZE; i++) {
 		A[i] = i;
 		B[i] = LIST_SIZE - i;
+	}
+	t_data	*test = (t_data*)malloc(sizeof(t_data)*LIST_SIZE);
+	for(i = 0; i < LIST_SIZE; i++)
+	{
+		test[i].param1 = i;
+		test[i].param2 = 2*i;
+		test[i].param3 = 0;
 	}
 
 	// Load the kernel source code into the array source_str
