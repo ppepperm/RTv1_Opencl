@@ -10,12 +10,20 @@
 
 #define MAX_SOURCE_SIZE (0x100000)
 
-typedef struct __attribute__ ((packed))	s_data
+typedef struct	s_p3
 {
-	double	param1;
-	int		param2;
+	double		x;
+	double		y;
+	double		z;
+}				t_p3;
+
+typedef struct	s_data
+{
 	char	param3;
-}										t_data;
+	int		param2;
+	double	param1;
+	t_p3	pos;
+}				t_data;
 
 int main(void) {
 	// Create the two input vectors
@@ -31,8 +39,11 @@ int main(void) {
 	for(i = 0; i < LIST_SIZE; i++)
 	{
 		test[i].param1 = i;
-		test[i].param2 = 2*i;
-		test[i].param3 = 0;
+		test[i].param2 = i;
+		test[i].param3 = 'a';
+		test[i].pos.x = 3;
+		test[i].pos.y = 4;
+		test[i].pos.z = 5;
 	}
 
 	// Load the kernel source code into the array source_str
@@ -49,13 +60,23 @@ int main(void) {
 	source_size = read(fd, source_str, MAX_SOURCE_SIZE);
 	close(fd);
 
+	char *header_str;
+	size_t	header_size;
+	fd = open("cl_header.cl", O_RDWR);
+	if (!fd) {
+		printf("Failed to load header.\n");
+		exit(1);
+	}
+	header_str = (char*)malloc(MAX_SOURCE_SIZE);
+	header_size = read(fd, header_str, MAX_SOURCE_SIZE);
+	close(fd);
 	// Get platform and device information
 	cl_platform_id platform_id = NULL;
 	cl_device_id device_id = NULL;
 	cl_uint ret_num_devices;
 	cl_uint ret_num_platforms;
 	cl_int ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
-	ret = clGetDeviceIDs( platform_id, CL_DEVICE_TYPE_DEFAULT, 1,
+	ret = clGetDeviceIDs( platform_id, CL_DEVICE_TYPE_GPU, 1,
 						  &device_id, &ret_num_devices);
 
 	// Create an OpenCL context
@@ -68,7 +89,7 @@ int main(void) {
 	cl_mem a_mem_obj = clCreateBuffer(context, CL_MEM_READ_ONLY,
 									  LIST_SIZE * sizeof(double), NULL, &ret);
 	cl_mem b_mem_obj = clCreateBuffer(context, CL_MEM_READ_ONLY,
-									  LIST_SIZE * sizeof(double), NULL, &ret);
+									  LIST_SIZE * sizeof(t_data), NULL, &ret);
 	cl_mem c_mem_obj = clCreateBuffer(context, CL_MEM_WRITE_ONLY,
 									  LIST_SIZE * sizeof(double), NULL, &ret);
 
@@ -76,18 +97,31 @@ int main(void) {
 	ret = clEnqueueWriteBuffer(command_queue, a_mem_obj, CL_TRUE, 0,
 							   LIST_SIZE * sizeof(double), A, 0, NULL, NULL);
 	ret = clEnqueueWriteBuffer(command_queue, b_mem_obj, CL_TRUE, 0,
-							   LIST_SIZE * sizeof(double), B, 0, NULL, NULL);
+								LIST_SIZE * sizeof(t_data), test, 0, NULL, NULL);
 
 	// Create a program from the kernel source
 	cl_program program = clCreateProgramWithSource(context, 1,
-												   (const char **)&source_str, (const size_t *)&source_size, &ret);
+													(const char **)&source_str, (const size_t *)&source_size, &ret);
+
+	// Create a program obj from header src
+	cl_program header = clCreateProgramWithSource(context, 1,
+													(const char **)&header_str, (const size_t *)&header_size, &ret);
 
 	// Build the program
-	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
-	//int jopa;
-	//ret = clGetProgramBuildInfo(program, device_id, CL_PROGRAM_BUILD_LOG, MAX_SOURCE_SIZE, source_str, &jopa);
-	//printf("%s", source_str);
+	//ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
+	char *h_str = "cl_header.h";
+	ret = clCompileProgram (program, ret_num_devices, &device_id, NULL, 1, &header, (const char **)&h_str, NULL, NULL);
+	if (ret == CL_INVALID_PROGRAM)
+		printf("1 %d\n", ret);
 
+	char *ret_str = (char*)malloc(sizeof(char)*100000);
+	clGetProgramBuildInfo (program, device_id, CL_PROGRAM_BUILD_LOG, 100000, ret_str, NULL);
+	printf("%s", ret_str);
+
+
+	program = clLinkProgram(context, ret_num_devices, &device_id, NULL, 1, &program, NULL, NULL, &ret);
+	if (ret != CL_SUCCESS)
+		printf("2 %d\n", ret);
 	// Create the OpenCL kernel
 	cl_kernel kernel = clCreateKernel(program, "vector_add", &ret);
 
@@ -109,7 +143,7 @@ int main(void) {
 
 	// Display the result to the screen
 	for(i = 0; i < LIST_SIZE; i++)
-		printf("%f + %f = %f\n", A[i], B[i], C[i]);
+		//printf(" %f\n", C[i]);
 
 	// Clean up
 	ret = clFlush(command_queue);
@@ -123,6 +157,7 @@ int main(void) {
 	ret = clReleaseContext(context);
 	free(A);
 	free(B);
+	free(test);
 	free(C);
 	return 0;
 }
