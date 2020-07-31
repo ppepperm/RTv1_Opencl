@@ -23,7 +23,6 @@ typedef double3 real3_t;
 typedef double4 real4_t;
 typedef double8 real8_t;
 typedef double16 real16_t;
-__constant real_t inc = 0.11111;
 #define PI 3.14159265358979323846
 
 #else
@@ -35,7 +34,6 @@ typedef float3 real3_t;
 typedef float4 real4_t;
 typedef float8 real8_t;
 typedef float16 real16_t;
-__constant real_t inc = 0.222222;
 #define PI 3.14159265359f
 
 #endif
@@ -57,3 +55,4 @@ typedef struct	s_data
 	t_p3	pos;
 }				t_data;
 
+real_t	abs_p3(t_p3 vect);

@@ -46,13 +46,13 @@ int main(void) {
 		test[i].pos.z = 5;
 	}
 
-	// Load the kernel source code into the array source_str
+	// Loading source code of all files composing a Kernel program
 	int fd;
 	char *source_str;
 	size_t source_size;
 
 	fd = open("programm.cl", O_RDWR);
-	if (!fd) {
+	if (fd < 0) {
 		printf("Failed to load kernel.\n");
 		exit(1);
 	}
@@ -63,15 +63,26 @@ int main(void) {
 	char *header_str;
 	size_t	header_size;
 	fd = open("cl_header.h", O_RDWR);
-	printf("%d\n", fd);
-	if (!fd) {
+	if (fd < 0) {
 		printf("Failed to load header.\n");
 		exit(1);
 	}
 	header_str = (char*)malloc(MAX_SOURCE_SIZE);
 	header_size = read(fd, header_str, MAX_SOURCE_SIZE);
 	close(fd);
-	//printf("header: %s\n", header_str);
+	//printf("header %s", header_str);
+
+	char *function_str;
+	size_t	function_size;
+	fd = open("abs.cl", O_RDWR);
+	if (fd < 0) {
+		printf("Failed to load abs.cl \n");
+		exit(1);
+	}
+	function_str = (char*)malloc(MAX_SOURCE_SIZE);
+	function_size = read(fd, function_str, MAX_SOURCE_SIZE);
+	close(fd);
+
 	// Get platform and device information
 	cl_platform_id platform_id = NULL;
 	cl_device_id device_id = NULL;
@@ -107,22 +118,38 @@ int main(void) {
 	// Create a program obj from header src
 	cl_program header = clCreateProgramWithSource(context, 1,
 													(const char **)&header_str, (const size_t *)&header_size, &ret);
-
+	// Create a program obj from function src
+	cl_program func = clCreateProgramWithSource(context, 1,
+													(const char **)&function_str, (const size_t *)&function_size, &ret);
 	// Build the program
-	//ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
 	char *h_str = "cl_header.h";
 	ret = clCompileProgram (program, ret_num_devices, &device_id, NULL, 1, &header, (const char **)&h_str, NULL, NULL);
 	if (ret != CL_SUCCESS)
 		printf("1 %d\n", ret);
 
+	ret = clCompileProgram (func, ret_num_devices, &device_id, NULL, 1, &header, (const char **)&h_str, NULL, NULL);
+	if (ret != CL_SUCCESS)
+		printf("1 %d\n", ret);
+
+
 	char *ret_str = (char*)malloc(sizeof(char)*100000);
 	ret = clGetProgramBuildInfo (program, device_id, CL_PROGRAM_BUILD_LOG, 100000, ret_str, NULL);
-	printf("%d BUILD_INFO: %s\n", ret, ret_str);
+	printf("%d main BUILD_INFO: %s\n", ret, ret_str);
+	ret_str = (char*)malloc(sizeof(char)*100000);
+	ret = clGetProgramBuildInfo (func, device_id, CL_PROGRAM_BUILD_LOG, 100000, ret_str, NULL);
+	printf("%d funk BUILD_INFO: %s\n", ret, ret_str);
 
+	cl_program objs[2];
 
-	program = clLinkProgram(context, ret_num_devices, &device_id, NULL, 1, &program, NULL, NULL, &ret);
+	objs[0] = program;
+	objs[1] = func;
+
+	program = clLinkProgram(context, ret_num_devices, &device_id, NULL, 2, objs, NULL, NULL, &ret);
 	if (ret != CL_SUCCESS)
 		printf("2 %d\n", ret);
+	ret_str = (char*)malloc(sizeof(char)*100000);
+	ret = clGetProgramBuildInfo (program, device_id, CL_PROGRAM_BUILD_LOG, 100000, ret_str, NULL);
+	printf("%d all BUILD_INFO: %s\n", ret, ret_str);
 	// Create the OpenCL kernel
 	cl_kernel kernel = clCreateKernel(program, "vector_add", &ret);
 
@@ -143,7 +170,7 @@ int main(void) {
 							  LIST_SIZE * sizeof(double), C, 0, NULL, NULL);
 
 	// Display the result to the screen
-	for(i = 0; i < LIST_SIZE; i++)
+	for(i = 0; i < 3; i++)
 		printf(" %f\n", C[i]);
 
 	// Clean up
