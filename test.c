@@ -62,7 +62,8 @@ int main(void) {
 
 	char *header_str;
 	size_t	header_size;
-	fd = open("cl_header.cl", O_RDWR);
+	fd = open("cl_header.h", O_RDWR);
+	printf("%d\n", fd);
 	if (!fd) {
 		printf("Failed to load header.\n");
 		exit(1);
@@ -70,6 +71,7 @@ int main(void) {
 	header_str = (char*)malloc(MAX_SOURCE_SIZE);
 	header_size = read(fd, header_str, MAX_SOURCE_SIZE);
 	close(fd);
+	//printf("header: %s\n", header_str);
 	// Get platform and device information
 	cl_platform_id platform_id = NULL;
 	cl_device_id device_id = NULL;
@@ -102,7 +104,6 @@ int main(void) {
 	// Create a program from the kernel source
 	cl_program program = clCreateProgramWithSource(context, 1,
 													(const char **)&source_str, (const size_t *)&source_size, &ret);
-
 	// Create a program obj from header src
 	cl_program header = clCreateProgramWithSource(context, 1,
 													(const char **)&header_str, (const size_t *)&header_size, &ret);
@@ -111,12 +112,12 @@ int main(void) {
 	//ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
 	char *h_str = "cl_header.h";
 	ret = clCompileProgram (program, ret_num_devices, &device_id, NULL, 1, &header, (const char **)&h_str, NULL, NULL);
-	if (ret == CL_INVALID_PROGRAM)
+	if (ret != CL_SUCCESS)
 		printf("1 %d\n", ret);
 
 	char *ret_str = (char*)malloc(sizeof(char)*100000);
-	clGetProgramBuildInfo (program, device_id, CL_PROGRAM_BUILD_LOG, 100000, ret_str, NULL);
-	printf("%s", ret_str);
+	ret = clGetProgramBuildInfo (program, device_id, CL_PROGRAM_BUILD_LOG, 100000, ret_str, NULL);
+	printf("%d BUILD_INFO: %s\n", ret, ret_str);
 
 
 	program = clLinkProgram(context, ret_num_devices, &device_id, NULL, 1, &program, NULL, NULL, &ret);
@@ -143,7 +144,7 @@ int main(void) {
 
 	// Display the result to the screen
 	for(i = 0; i < LIST_SIZE; i++)
-		//printf(" %f\n", C[i]);
+		printf(" %f\n", C[i]);
 
 	// Clean up
 	ret = clFlush(command_queue);
