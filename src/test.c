@@ -1,21 +1,7 @@
-#include <stdio.h>
-#include <fcntl.h>
-#include <stdlib.h>
-
-#ifdef __APPLE__
-#include <OpenCL/opencl.h>
-#else
-#include <CL/cl.h>
-#endif
+#include "../includes/rt.h"
 
 #define MAX_SOURCE_SIZE (0x100000)
 
-typedef struct	s_p3
-{
-	double		x;
-	double		y;
-	double		z;
-}				t_p3;
 
 typedef struct	s_data
 {
@@ -130,10 +116,11 @@ int main(void) {
 	char *ret_str = (char*)malloc(sizeof(char)*100000);
 	ret = clGetProgramBuildInfo (program, device_id, CL_PROGRAM_BUILD_LOG, 100000, ret_str, NULL);
 	printf("%d main BUILD_INFO: %s\n", ret, ret_str);
+	free(ret_str);
 	ret_str = (char*)malloc(sizeof(char)*100000);
 	ret = clGetProgramBuildInfo (func, device_id, CL_PROGRAM_BUILD_LOG, 100000, ret_str, NULL);
 	printf("%d funk BUILD_INFO: %s\n", ret, ret_str);
-
+	free(ret_str);
 	cl_program objs[2];
 
 	objs[0] = program;
@@ -153,7 +140,7 @@ int main(void) {
 
 	// Execute the OpenCL kernel on the list
 	size_t global_item_size = LIST_SIZE; // Process the entire lists
-	size_t local_item_size = 64; // Divide work items into groups of 64
+	size_t local_item_size = 1; // Divide work items into groups of 64
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL,
 								 &global_item_size, &local_item_size, 0, NULL, NULL);
 
