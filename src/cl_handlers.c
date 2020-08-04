@@ -21,7 +21,8 @@ t_ocl_sequence	init_ocl_sequence(void)
 	sq.d_id = NULL;
 	ret = clGetPlatformsIDs(1, &(sq.p_id), &(sq.num_pl));
 	ret = clGetDeviceIDs(sq.p_id, CL_DEVICE_TYPE_GPU, 1, &(sq.d_id), &(sq.num_dv));
-	sq.context = clCreateContext(NULL, 1, &(sq.))
+	sq.context = clCreateContext(NULL, 1, &(sq.d_id), NULL, NULL, &ret);
+	cq.queue = clCreateCommandQueue()
 
 
 }
