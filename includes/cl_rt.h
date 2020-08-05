@@ -73,18 +73,21 @@ typedef struct		s_sdl_sequence
 	SDL_Texture		*win_tex;
 }					t_sdl_sequence;
 
-typedef				s_ocl_sequence
+typedef struct			s_ocl_sequence
 {
 	cl_platform_id		p_id;
 	cl_device_id		d_id;
 	cl_uint				num_dv;
 	cl_uint				num_pl;
 	cl_context			context;
-	cl_command_queue	command_queue;
+	cl_command_queue	queue;
 	cl_kernel			kernel;
 }					t_ocl_sequence;
 
-int			init_sdl_sequence(t_sdl_sequence *sq);
-void		end_sdl(t_sdl_sequence sq);
-
+int				init_sdl_sequence(t_sdl_sequence *sq);
+void			end_sdl(t_sdl_sequence sq);
+void			init_ocl_sequence(t_ocl_sequence *sq);
+cl_program		program_from_file(char *fname, t_ocl_sequence sq);
+void			get_build_info(cl_program program, t_ocl_sequence sq, char* name);
+void			prepare_kernel(t_ocl_sequence *sq);
 #endif

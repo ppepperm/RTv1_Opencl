@@ -11,7 +11,7 @@
 # **************************************************************************** #
 
 NAME= RTv1
-SRC := src/main.c src/sdl_sq.c
+SRC := src/main.c src/sdl_sq.c src/cl_handlers.c
 OBJ := $(SRC:%.c=%.o)
 CFLAGS := -Wall -Wextra -Werror -I includes
 LIB_FLAG :=  -L libft/ -lft `./SDL2-2.0.12/sdl2-config --libs --cflags` -O0  -framework OpenCL

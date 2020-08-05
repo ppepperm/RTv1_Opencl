@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/rt.h"
+#include "../includes/cl_rt.h"
 
 int			init_sdl_sequence(t_sdl_sequence *sq)
 {

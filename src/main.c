@@ -10,13 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/rt.h"
+#include "../includes/cl_rt.h"
 
 int main(void)
 {
-	t_sdl_sequence sq;
+	t_sdl_sequence sdl_sq;
+	t_ocl_sequence ocl_sq;
 
-	init_sdl_sequence(&sq);
-	while (!(SDL_PollEvent(&(sq.event)) && sq.event.type == SDL_QUIT));
-	end_sdl(sq);
+	init_sdl_sequence(&sdl_sq);
+	init_ocl_sequence(&ocl_sq);
+	prepare_kernel(&ocl_sq);
+	while (!(SDL_PollEvent(&(sdl_sq.event)) && sdl_sq.event.type == SDL_QUIT));
+	end_sdl(sdl_sq);
 }
