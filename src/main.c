@@ -20,6 +20,9 @@ int main(void)
 	init_sdl_sequence(&sdl_sq);
 	init_ocl_sequence(&ocl_sq);
 	prepare_kernel(&ocl_sq);
-	while (!(SDL_PollEvent(&(sdl_sq.event)) && sdl_sq.event.type == SDL_QUIT));
+	execute_rt(ocl_sq, sdl_sq);
+	SDL_RenderCopy(sdl_sq.renderer, sdl_sq.win_tex, NULL, NULL);
+	while (!(SDL_PollEvent(&(sdl_sq.event)) && sdl_sq.event.type == SDL_QUIT))
+		SDL_RenderCopy(sdl_sq.renderer, sdl_sq.win_tex, NULL, NULL);
 	end_sdl(sdl_sq);
 }
