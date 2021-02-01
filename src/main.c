@@ -23,6 +23,9 @@ int main(void)
 	execute_rt(ocl_sq, sdl_sq);
 	SDL_RenderCopy(sdl_sq.renderer, sdl_sq.win_tex, NULL, NULL);
 	while (!(SDL_PollEvent(&(sdl_sq.event)) && sdl_sq.event.type == SDL_QUIT))
+    {
 		SDL_RenderCopy(sdl_sq.renderer, sdl_sq.win_tex, NULL, NULL);
+        SDL_RenderPresent(sdl_sq.renderer);
+    }
 	end_sdl(sdl_sq);
 }

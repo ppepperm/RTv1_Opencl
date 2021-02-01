@@ -21,24 +21,24 @@
 # include <stdio.h>
 # include <pthread.h>
 
-#define CONFIG_USE_DOUBLE 1
+#define CONFIG_USE_real_t 1
 
-#if CONFIG_USE_DOUBLE
+#if CONFIG_USE_real_t
 
 #if defined(cl_khr_fp64)  // Khronos extension available?
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
-#define DOUBLE_SUPPORT_AVAILABLE
+#define real_t_SUPPORT_AVAILABLE
 #elif defined(cl_amd_fp64)  // AMD extension available?
 #pragma OPENCL EXTENSION cl_amd_fp64 : enable
-#define DOUBLE_SUPPORT_AVAILABLE
+#define real_t_SUPPORT_AVAILABLE
 #endif
 
-#endif // CONFIG_USE_DOUBLE
+#endif // CONFIG_USE_real_t
 
-#if defined(DOUBLE_SUPPORT_AVAILABLE)
+#if defined(real_t_SUPPORT_AVAILABLE)
 
-// double
-typedef double real_t;
+// real_t
+typedef real_t real_t;
 #define PI 3.14159265358979323846
 
 #else
@@ -93,6 +93,66 @@ typedef struct		s_q
 	real_t			j;
 	real_t			k;
 }					t_q;
+
+typedef struct		s_ray
+{
+    t_p3			pos;
+    t_p3			dir;
+}					t_ray;
+
+typedef struct		s_light_arg
+{
+    t_p3			norm;
+    t_p3			inter;
+}					t_light_arg;
+
+typedef struct		s_sphere
+{
+    t_p3			pos;
+    real_t			r;
+}					t_sphere;
+
+typedef struct		s_plane
+{
+    t_p3			dir;
+    real_t			d;
+}					t_plane;
+
+typedef struct		s_cone
+{
+    t_p3			pos;
+    real_t			r;
+    real_t			c;
+}					t_cone;
+
+typedef struct		s_cylinder
+{
+    t_p3			pos;
+    real_t			r;
+}					t_cylinder;
+
+typedef struct		s_camera
+{
+    t_p3			pos;
+    t_p3			x_dir;
+    t_p3			y_dir;
+    t_p3			z_dir;
+}					t_camera;
+
+typedef struct		s_rgb
+{
+    unsigned char	r;
+    unsigned char	g;
+    unsigned char	b;
+    unsigned char	a;
+}					t_rgb;
+
+typedef struct		s_transform
+{
+    t_p3			x_dir;
+    t_p3			y_dir;
+    t_p3			z_dir;
+}					t_transform;
 
 typedef struct		s_sdl_sequence
 {
