@@ -37,6 +37,13 @@ typedef float16 real16_t;
 # define W_H		720.0
 # define W_W		1080.0
 # define C_Z		1.0
+# define T_SPHERE	1
+# define T_PLANE	2
+# define T_CONE		3
+# define T_CYLINDER	4
+# define L_DOT	  1
+# define L_DIR	  2
+
 
 typedef struct		s_i2
 {
@@ -110,6 +117,14 @@ typedef struct		s_camera
     t_p3			z_dir;
 }					t_camera;
 
+typedef struct		s_light
+{
+    unsigned char	type;
+    t_p3			data;
+    real_t 			i;
+    struct s_light	*next;
+}					t_light;
+
 typedef struct		s_rgb
 {
     unsigned char	r;
@@ -138,6 +153,14 @@ typedef struct		s_object
     struct s_object	*next;
 }					t_object;
 
+typedef struct		s_scene
+{
+    t_camera		camera;
+    t_object		*objects;
+    t_light			*lights;
+    t_object		*chosen;
+}					t_scene;
+
 real_t      abs_p3(t_p3 vect);
 t_p2		init_p2(real_t x, real_t y);
 t_p3		init_p3(real_t x, real_t y, real_t z);
@@ -151,15 +174,19 @@ t_p3		transform_pos(t_p3 pos, t_transform t, t_p3 t_pos);
 t_p3		transform_dir(t_p3 dir, t_transform t);
 t_ray		ray_transform(t_ray ray, t_transform t, t_p3 pos);
 
-t_p3	lin_comb(t_p3 a, real_t k1, t_p3 b, real_t k2);
-real_t 	sc_mult(t_p3 a, t_p3 b);
-real_t 	ft_min(real_t a, real_t b);
-void	ft_normalize(t_p3 *vec);
-t_p3	return_norm_cone(t_cone cone, t_p3 inter);
+t_p3	    lin_comb(t_p3 a, real_t k1, t_p3 b, real_t k2);
+real_t 	    sc_mult(t_p3 a, t_p3 b);
+real_t 	    ft_min(real_t a, real_t b);
+void	    ft_normalize(t_p3 *vec);
+t_p3	    return_norm_cone(t_cone cone, t_p3 inter);
 
-t_p2	intersect_sphere(t_ray ray, t_object object);
-t_p2	intersect_plane(t_ray ray, t_object object);
-t_p2	intersect_cone(t_ray ray, t_object object);
-t_p2	intersect_cylinder(t_ray ray, t_object object);
+t_p2	    intersect_sphere(t_ray ray, t_object object);
+t_p2    	intersect_plane(t_ray ray, t_object object);
+t_p2	    intersect_cone(t_ray ray, t_object object);
+t_p2	    intersect_cylinder(t_ray ray, t_object object);
+
+t_ray		init_ray(t_p3 pos, t_p3 dir);
+t_ray		get_ray(t_camera camera, real_t x, real_t y);
+
 
 #endif

@@ -66,12 +66,13 @@ void			get_build_info(cl_program program, t_ocl_sequence sq, char* name)
 void			prepare_kernel(t_ocl_sequence *sq)
 {
 	cl_program	header;
-	cl_program	srcs[6];
+	cl_program	srcs[7];
 	cl_program	kernel_program;
 	char 		*h_str;
     int ret;
 
 	h_str = "../includes/cl_header.h";
+
 	header = program_from_file("includes/cl_header.h", *sq);
 	srcs[0] = program_from_file("src/programm.cl", *sq);
 	srcs[1] = program_from_file("src/abs.cl", *sq);
@@ -79,19 +80,25 @@ void			prepare_kernel(t_ocl_sequence *sq)
     srcs[3] = program_from_file("src/inits.cl", *sq);
     srcs[4] = program_from_file("src/transform.cl", *sq);
     srcs[5] = program_from_file("src/linal.cl", *sq);
-	ret = clCompileProgram(srcs[0], sq->num_dv, &(sq->d_id), NULL, 1, &header, (const char**)&h_str, NULL, NULL);
+    srcs[6] = program_from_file("src/trace.cl", *sq);
+
+    ret = clCompileProgram(srcs[0], sq->num_dv, &(sq->d_id), NULL, 1, &header, (const char**)&h_str, NULL, NULL);
 	ret = clCompileProgram(srcs[1], sq->num_dv, &(sq->d_id), NULL, 1, &header, (const char**)&h_str, NULL, NULL);
     ret = clCompileProgram(srcs[2], sq->num_dv, &(sq->d_id), NULL, 1, &header, (const char**)&h_str, NULL, NULL);
     ret = clCompileProgram(srcs[3], sq->num_dv, &(sq->d_id), NULL, 1, &header, (const char**)&h_str, NULL, NULL);
     ret = clCompileProgram(srcs[4], sq->num_dv, &(sq->d_id), NULL, 1, &header, (const char**)&h_str, NULL, NULL);
     ret = clCompileProgram(srcs[5], sq->num_dv, &(sq->d_id), NULL, 1, &header, (const char**)&h_str, NULL, NULL);
+    ret = clCompileProgram(srcs[6], sq->num_dv, &(sq->d_id), NULL, 1, &header, (const char**)&h_str, NULL, NULL);
+
     get_build_info(srcs[0], *sq, "main");
     get_build_info(srcs[1], *sq, "funk");
     get_build_info(srcs[2], *sq, "intersections");
     get_build_info(srcs[3], *sq, "inits");
     get_build_info(srcs[4], *sq, "transform");
     get_build_info(srcs[5], *sq, "linal");
-    kernel_program = clLinkProgram(sq->context, sq->num_dv, &(sq->d_id), NULL, 6, srcs, NULL, NULL, &ret);
+    get_build_info(srcs[6], *sq, "trace");
+
+    kernel_program = clLinkProgram(sq->context, sq->num_dv, &(sq->d_id), NULL, 7, srcs, NULL, NULL, &ret);
 	get_build_info(kernel_program, *sq, "all");
 	sq->kernel = clCreateKernel(kernel_program, "vector_add", &ret);
 }
