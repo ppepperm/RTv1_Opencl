@@ -74,13 +74,13 @@ void			prepare_kernel(t_ocl_sequence *sq)
 	h_str = "../includes/cl_header.h";
 
 	header = program_from_file("includes/cl_header.h", *sq);
-	srcs[0] = program_from_file("src/programm.cl", *sq);
-	srcs[1] = program_from_file("src/abs.cl", *sq);
-	srcs[2] = program_from_file("src/intersections.cl", *sq);
-    srcs[3] = program_from_file("src/inits.cl", *sq);
-    srcs[4] = program_from_file("src/transform.cl", *sq);
-    srcs[5] = program_from_file("src/linal.cl", *sq);
-    srcs[6] = program_from_file("src/trace.cl", *sq);
+	srcs[0] = program_from_file("src_cl/programm.cl", *sq);
+	srcs[1] = program_from_file("src_cl/abs.cl", *sq);
+	srcs[2] = program_from_file("src_cl/intersections.cl", *sq);
+    srcs[3] = program_from_file("src_cl/inits.cl", *sq);
+    srcs[4] = program_from_file("src_cl/transform.cl", *sq);
+    srcs[5] = program_from_file("src_cl/linal.cl", *sq);
+    srcs[6] = program_from_file("src_cl/trace.cl", *sq);
 
     ret = clCompileProgram(srcs[0], sq->num_dv, &(sq->d_id), NULL, 1, &header, (const char**)&h_str, NULL, NULL);
 	ret = clCompileProgram(srcs[1], sq->num_dv, &(sq->d_id), NULL, 1, &header, (const char**)&h_str, NULL, NULL);

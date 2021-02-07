@@ -195,12 +195,38 @@ typedef struct		s_object
     struct s_object	*next;
 }					t_object;
 
+typedef struct      s_s_object
+{
+    unsigned char	type;
+    real_t 			reflect;
+    t_rgb			colour;
+    t_transform		t;
+    t_transform		i_t;
+    t_p3			pos;
+}                   t_s_object;
+
+typedef struct      s_types
+{
+    t_s_object      *s_object;
+    t_light         *light;
+    t_sphere        *sphere;
+    t_plane         *plane;
+    t_cone          *cone;
+    t_cylinder      *cylinder;
+}                   t_types;
+
 typedef struct		s_scene
 {
     t_camera		camera;
     t_object		*objects;
     t_light			*lights;
     t_object		*chosen;
+    int             o_count;
+    int             l_count;
+    int             o_size;
+    unsigned char   *s_obj;
+    t_light         *s_lht;
+    unsigned char   *obj_map;
 }					t_scene;
 
 

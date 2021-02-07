@@ -16,7 +16,10 @@ int main(void)
 {
 	t_sdl_sequence sdl_sq;
 	t_ocl_sequence ocl_sq;
+	t_scene scene;
 
+	scene = read_scene("scene");
+	printf("%d %d %d\n", scene.o_count, scene.o_size, scene.l_count);
 	init_sdl_sequence(&sdl_sq);
 	init_ocl_sequence(&ocl_sq);
 	prepare_kernel(&ocl_sq);

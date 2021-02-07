@@ -53,6 +53,37 @@ static void	read_obj(int fd, t_scene *scene)
     }
 }
 
+static void get_size(t_scene *scene)
+{
+    t_object    *o_ptr;
+    t_light     *l_ptr;
+
+    scene->o_count = 0;
+    scene->l_count = 0;
+    scene->o_size = 0;
+    o_ptr = scene->objects;
+    l_ptr = scene->lights;
+    while (o_ptr)
+    {
+        scene->o_count += 1;
+        scene->o_size += sizeof(t_s_object);
+        if (o_ptr->type == T_SPHERE)
+            scene->o_size += sizeof(t_sphere);
+        else if (o_ptr->type == T_CONE)
+            scene->o_size += sizeof(t_cone);
+        else if (o_ptr->type == T_CYLINDER)
+            scene->o_size += sizeof(t_cylinder);
+        else if (o_ptr->type == T_PLANE)
+            scene->o_size += sizeof(t_plane);
+        o_ptr = o_ptr->next;
+    }
+    while (l_ptr)
+    {
+        scene->l_count += 1;
+        l_ptr = l_ptr->next;
+    }
+}
+
 t_scene		read_scene(char *fname)
 {
     t_scene	scene;
@@ -64,7 +95,11 @@ t_scene		read_scene(char *fname)
     scene.objects = NULL;
     scene.lights = NULL;
     scene.chosen = NULL;
+    scene.s_obj = NULL;
+    scene.s_lht = NULL;
+    scene.obj_map = NULL;
     read_obj(fd, &scene);
     remember_head(scene);
+    get_size(&scene);
     return (scene);
 }
